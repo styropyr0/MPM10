@@ -111,6 +111,15 @@ void MPM10::readFromUART()
             }
         }
         Serial2.end();
+
+#if defined(ARDUINO_ARCH_ESP32)
+        Serial2.end();
+#elif defined(ARDUINO_SAM_DUE) || defined(ARDUINO_AVR_MEGA2560) || defined(ARDUINO_AVR_MEGA)
+        Serial2.end();
+#elif defined(ARDUINO_ARCH_SAMD)
+        Serial1.end();
+#endif
+
     }
 }
 
@@ -184,10 +193,8 @@ bool MPM10::isConnected()
 {
     if (this->mode == MPM10_MODE_UART)
     {
-        Serial1.begin(9600);
-        Serial1.write(0x42);
-        Serial1.write(0x4D);
-        Serial1.end();
+        readFromUART();
+        return isValidData();
     }
     else
         return sensorHub.is_sensor_connected();
