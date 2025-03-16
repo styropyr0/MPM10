@@ -1,4 +1,4 @@
-# MPM10 Particulate Matter Sensor Driver
+# MPM10 Particulate Matter Sensor Library for Arduino
 
 The `MPM10` driver is a C++ library designed to interface with the MPM10 particulate matter sensor. This library supports both UART and I2C communication modes, providing an easy-to-use API to read particulate matter data (PM1.0, PM2.5, PM10) and particle counts in various air volumes. It is compatible with Arduino and other platforms that support the Arduino framework.
 
