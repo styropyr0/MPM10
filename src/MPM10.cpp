@@ -84,43 +84,51 @@ void MPM10::readFromUART()
     if (this->mode == MPM10_MODE_UART)
     {
 
+#if defined(ARDUINO_ARCH_ESP32) || defined(ARDUINO_SAM_DUE) || defined(ARDUINO_AVR_MEGA2560) || defined(ARDUINO_AVR_MEGA) || defined(ARDUINO_ARCH_SAMD)
+
+        if (this->mode == MPM10_MODE_UART)
+        {
 #if defined(ARDUINO_ARCH_ESP32)
-        Serial2.begin(MPM_10_BAUD_RATE, SERIAL_8N1, rx, tx);
+            Serial2.begin(MPM_10_BAUD_RATE, SERIAL_8N1, rx, tx);
 #elif defined(ARDUINO_SAM_DUE) || defined(ARDUINO_AVR_MEGA2560) || defined(ARDUINO_AVR_MEGA)
-        Serial2.begin(MPM_10_BAUD_RATE);
-#elif defined(ARDUINO_ARCH_ESP8266)
-        Serial.begin(MPM_10_BAUD_RATE, SERIAL_8N1);
+            Serial2.begin(MPM_10_BAUD_RATE);
 #elif defined(ARDUINO_ARCH_SAMD)
-        Serial1.begin(MPM_10_BAUD_RATE);
-#else
-#error "Unsupported board! Use a board that supports multiple UART ports."
-        Serial.begin(MPM_10_BAUD_RATE);
+            Serial1.begin(MPM_10_BAUD_RATE);
 #endif
 
-        unsigned long startTime = millis();
-        uint8_t index = 0;
-        while (millis() - startTime < MPM10_TIMEOUT)
-        {
-            if (Serial2.available())
+            unsigned long startTime = millis();
+            uint8_t index = 0;
+            while (millis() - startTime < MPM10_TIMEOUT)
             {
-                buffer[index] = Serial2.read();
+#if defined(ARDUINO_ARCH_ESP32) || defined(ARDUINO_SAM_DUE) || defined(ARDUINO_AVR_MEGA2560) || defined(ARDUINO_AVR_MEGA)
+                if (Serial2.available())
+                {
+                    buffer[index] = Serial2.read();
+#elif defined(ARDUINO_ARCH_SAMD)
+                if (Serial1.available())
+                {
+                    buffer[index] = Serial1.read();
+#endif
 
-                index++;
-                startTime = millis();
-                if (index >= MPM10_BUFFER_SIZE)
-                    break;
+                    index++;
+                    startTime = millis();
+                    if (index >= MPM10_BUFFER_SIZE)
+                        break;
+                }
             }
-        }
-        Serial2.end();
 
 #if defined(ARDUINO_ARCH_ESP32)
-        Serial2.end();
+            Serial2.end();
 #elif defined(ARDUINO_SAM_DUE) || defined(ARDUINO_AVR_MEGA2560) || defined(ARDUINO_AVR_MEGA)
-        Serial2.end();
+            Serial2.end();
 #elif defined(ARDUINO_ARCH_SAMD)
         Serial1.end();
 #endif
+        }
 
+#else
+#warning "Unsupported board! You cannot use UART with this board. Use a board that supports multiple UART ports."
+#endif
     }
 }
 
