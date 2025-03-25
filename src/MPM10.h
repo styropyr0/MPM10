@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <SensorHub.h>
+#include <SensorHubTemplates.h>
 #include "MPM10DEFS.h"
 
 #ifdef __cplusplus

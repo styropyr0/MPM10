@@ -1,4 +1,5 @@
 #include "MPM10.h"
+#include <SensorHubTemplates.h>
 
 MPM10::MPM10(uint8_t tx, uint8_t rx) : sensorHub(MPM10_I2C_ADDR_READ)
 {
